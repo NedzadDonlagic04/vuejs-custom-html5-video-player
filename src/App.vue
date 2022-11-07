@@ -1,3 +1,13 @@
+<script>
+import VideoPlayer from './components/VideoPlayer.vue';
+
+export default {
+    components: {
+        VideoPlayer
+    }
+}
+</script>
+
 <template>
-    <h1>Hello World!</h1>
+    <VideoPlayer />
 </template>
