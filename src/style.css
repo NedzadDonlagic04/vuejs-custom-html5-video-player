@@ -9,6 +9,7 @@
     --bg-color: hsl(0, 0%, 80%);
     --controls-bg: hsla(0, 100%, 0%, .7);
     --bar-color: orangered;
+    --bar-height: .5rem;
 }
 
 html {
