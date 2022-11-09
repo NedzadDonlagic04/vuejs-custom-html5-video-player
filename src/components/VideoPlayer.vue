@@ -6,6 +6,7 @@ export default {
             isMounted: false,
             playShow: true,
             pauseShow: false,
+            restartShow: false,
             currentTime: null,
             duration: null
         }
@@ -27,6 +28,8 @@ export default {
     },
     methods: {
         playPauseEvent() {
+            this.restartShow = false;
+
             if(this.playPause === 'play') {
                 this.playPause = 'pause';
                 this.$refs.video.play();
@@ -41,11 +44,17 @@ export default {
                 this.pauseShow = false;
             }
         },
-        metadataLoaded(event) {
+        metadataLoadedEvent(event) {
             this.duration = event.target.duration;
         },
         timeUpdateEvent(event) {
             this.currentTime = event.target.currentTime; 
+        },
+        endedEvent() {
+            this.playShow = false;
+            this.pauseShow = false;
+            this.restartShow = true;
+            this.playPause = 'play';
         }
     }
 }
@@ -53,7 +62,7 @@ export default {
 
 <template>
     <div class="video-container">
-        <video ref="video" class="video" src="./../assets/movie.mp4" @click="playPauseEvent" @loadedmetadata="metadataLoaded" @timeupdate="timeUpdateEvent"></video>
+        <video ref="video" class="video" src="./../assets/movie.mp4" @click="playPauseEvent" @loadedmetadata="metadataLoadedEvent" @timeupdate="timeUpdateEvent" @ended="endedEvent"></video>
         <div class="controls">
             <div class="progress-bar">
                 <div class="current-bar" :style="{ width: progress }">
@@ -63,6 +72,7 @@ export default {
                 <button @click="playPauseEvent">
                     <img v-show="playShow" src="./../assets/icons/play.png" alt="play button">
                     <img v-show="pauseShow" src="./../assets/icons/pause.png" alt="pause button">
+                    <img v-show="restartShow" src="./../assets/icons/restart.png" alt="restart button">
                 </button>
             </div>  
         </div>
