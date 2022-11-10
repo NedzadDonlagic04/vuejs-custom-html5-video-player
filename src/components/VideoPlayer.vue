@@ -2,13 +2,14 @@
 export default {
     data() {
         return {
-            playPause: 'play',
             isMounted: false,
             playShow: true,
             pauseShow: false,
             restartShow: false,
             currentTime: null,
-            duration: null
+            duration: null,
+            rewindTime: 0,
+            forwardTime: 0
         }
     },
     mounted() {
@@ -35,18 +36,17 @@ export default {
     },
     methods: {
         playPauseEvent() {
-            this.restartShow = false;
+            if(this.restartShow) {
+                this.restartShow = false;
+                this.playShow = true;
+            }
 
-            if(this.playPause === 'play') {
-                this.playPause = 'pause';
+            if(this.playShow) {
                 this.$refs.video.play();
-
                 this.playShow = false;
                 this.pauseShow = true;
             } else {
-                this.playPause = 'play';
                 this.$refs.video.pause();
-
                 this.playShow = true;
                 this.pauseShow = false;
             }
@@ -55,13 +55,27 @@ export default {
             this.duration = event.target.duration;
         },
         timeUpdateEvent(event) {
+            if(this.rewindTime !== 0) {
+                if(event.target.currentTime + this.rewindTime <= 0) {
+                    event.target.currentTime = 0;
+                } else {
+                    event.target.currentTime += this.rewindTime;
+                }
+                this.rewindTime = 0;
+            } else if(this.forwardTime !== 0) {
+                if(event.target.currentTime + this.forwardTime >= this.duration) {
+                    event.target.currentTime = this.duration;
+                } else {
+                    event.target.currentTime += this.forwardTime;
+                }
+                this.forwardTime = 0;
+            }
             this.currentTime = event.target.currentTime; 
         },
         endedEvent() {
             this.playShow = false;
             this.pauseShow = false;
             this.restartShow = true;
-            this.playPause = 'play';
         },
         timeToString(totalTime) {
             totalTime = Math.floor(totalTime);
@@ -96,6 +110,16 @@ export default {
             }
             
             return returnVal;
+        },
+        rewind() {
+            if(!this.restartShow) {
+                this.rewindTime = -10;
+            }
+        },  
+        forward() {
+            if(!this.restartShow) {
+                this.forwardTime = 10;
+            }
         }
     }
 }
@@ -103,7 +127,12 @@ export default {
 
 <template>
     <div class="video-container">
-        <video ref="video" class="video" src="./../assets/movie.mp4" @click="playPauseEvent" @loadedmetadata="metadataLoadedEvent" @timeupdate="timeUpdateEvent" @ended="endedEvent"></video>
+        <video ref="video" class="video" src="./../assets/movie.mp4" 
+            @click="playPauseEvent" 
+            @loadedmetadata="metadataLoadedEvent" 
+            @timeupdate="timeUpdateEvent" 
+            @ended="endedEvent"
+        ></video>
         <div class="controls">
             <div class="progress-bar">
                 <div class="current-bar" :style="{ width: progress }">
@@ -114,6 +143,12 @@ export default {
                     <img v-show="playShow" src="./../assets/icons/play.png" alt="play button">
                     <img v-show="pauseShow" src="./../assets/icons/pause.png" alt="pause button">
                     <img v-show="restartShow" src="./../assets/icons/restart.png" alt="restart button">
+                </button>
+                <button class="rewind-forward" @click="rewind">
+                    <img src="./../assets/icons/rewind.png" alt="rewind button">
+                </button>
+                <button class="rewind-forward" @click="forward">
+                    <img src="./../assets/icons/forward.png" alt="forward button">
                 </button>
                 <p class="time">{{timeStamp}}</p>
             </div>  
@@ -182,5 +217,9 @@ export default {
     .time {
         margin-left: .3rem;
         color: white;
+    }
+
+    .rewind-forward {
+        scale: .7;
     }
 </style>
