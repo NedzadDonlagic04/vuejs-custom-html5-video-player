@@ -21,9 +21,16 @@ export default {
                  percent = 0;
             } else {
                 percent = this.currentTime / this.duration * 100;
-                console.log(this.currentTime, this.duration);
+                // console.log(this.currentTime, this.duration);
+                // ^ Was used a lot for testing purposes so I'm leaving it here
             }
             return `${percent}%`;
+        },
+        timeStamp() {
+            const time1 = this.timeToString(this.currentTime);
+            const time2 = this.timeToString(this.duration);
+
+            return `${time1} / ${time2}`;
         }
     },
     methods: {
@@ -55,6 +62,40 @@ export default {
             this.pauseShow = false;
             this.restartShow = true;
             this.playPause = 'play';
+        },
+        timeToString(totalTime) {
+            totalTime = Math.floor(totalTime);
+            
+            let [minutes, hours] = [0, 0];
+
+            if(totalTime >= 60) {
+                minutes = Math.floor(totalTime / 60);
+                
+                if(minutes >= 60) {
+                    hours = Math.floor(minutes / 60);
+                    minutes = minutes - hours * 60;
+                }
+            }
+            
+            const convertToString = val => {
+                val = String(val);
+                if(val.length < 2) {
+                    val = '0' + val;
+                }
+                
+                return val;
+            }
+            
+            totalTime = totalTime - minutes * 60 - hours * 3600;
+            totalTime = convertToString(totalTime);
+            minutes = convertToString(minutes);
+            
+            let returnVal = minutes + ':' + totalTime;
+            if(hours > 0) {
+                returnVal = hours + ':' + returnVal;
+            }
+            
+            return returnVal;
         }
     }
 }
@@ -74,6 +115,7 @@ export default {
                     <img v-show="pauseShow" src="./../assets/icons/pause.png" alt="pause button">
                     <img v-show="restartShow" src="./../assets/icons/restart.png" alt="restart button">
                 </button>
+                <p class="time">{{timeStamp}}</p>
             </div>  
         </div>
     </div>
@@ -121,6 +163,9 @@ export default {
         padding-top: .2rem;
         padding-left: .5rem;
         user-select: none;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
     }
 
     .buttons button {
@@ -132,5 +177,10 @@ export default {
 
     .buttons button img {
         width: 2.5rem;
+    }
+
+    .time {
+        margin-left: .3rem;
+        color: white;
     }
 </style>
