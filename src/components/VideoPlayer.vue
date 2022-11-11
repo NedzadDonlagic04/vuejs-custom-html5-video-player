@@ -8,8 +8,8 @@ export default {
             restartShow: false,
             currentTime: null,
             duration: null,
-            rewindTime: 0,
-            forwardTime: 0
+            rewindTime: -10,
+            forwardTime: 10
         }
     },
     mounted() {
@@ -55,21 +55,6 @@ export default {
             this.duration = event.target.duration;
         },
         timeUpdateEvent(event) {
-            if(this.rewindTime !== 0) {
-                if(event.target.currentTime + this.rewindTime <= 0) {
-                    event.target.currentTime = 0;
-                } else {
-                    event.target.currentTime += this.rewindTime;
-                }
-                this.rewindTime = 0;
-            } else if(this.forwardTime !== 0) {
-                if(event.target.currentTime + this.forwardTime >= this.duration) {
-                    event.target.currentTime = this.duration;
-                } else {
-                    event.target.currentTime += this.forwardTime;
-                }
-                this.forwardTime = 0;
-            }
             this.currentTime = event.target.currentTime; 
         },
         endedEvent() {
@@ -112,13 +97,21 @@ export default {
             return returnVal;
         },
         rewind() {
-            if(!this.restartShow) {
-                this.rewindTime = -10;
+            if(this.restartShow) return;
+            
+            if(this.$refs.video.currentTime + this.rewindTime < 0) {
+                this.$refs.video.currentTime = 0;
+            } else {
+                this.$refs.video.currentTime += this.rewindTime;
             }
         },  
         forward() {
-            if(!this.restartShow) {
-                this.forwardTime = 10;
+            if(this.restartShow) return;
+
+            if(this.$refs.video.currentTime + this.forwardTime > this.duration) {
+                this.$refs.video.currentTime = this.duration;
+            } else {
+                this.$refs.video.currentTime += this.forwardTime;
             }
         }
     }
@@ -187,6 +180,7 @@ export default {
     .progress-bar {
         height: var(--bar-height);
         width: 100%;
+        cursor: pointer;
     }
 
     .current-bar {
