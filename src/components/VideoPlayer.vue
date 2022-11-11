@@ -9,7 +9,8 @@ export default {
             currentTime: null,
             duration: null,
             rewindTime: -10,
-            forwardTime: 10
+            forwardTime: 10,
+            audio: true
         }
     },
     mounted() {
@@ -113,6 +114,10 @@ export default {
             } else {
                 this.$refs.video.currentTime += this.forwardTime;
             }
+        },
+        audioOnOff() {
+            this.$refs.video.muted = this.audio;
+            this.audio = !this.audio;
         }
     }
 }
@@ -144,6 +149,10 @@ export default {
                     <img src="./../assets/icons/forward.png" alt="forward button">
                 </button>
                 <p class="time">{{timeStamp}}</p>
+                <button class="audio" @click="audioOnOff">
+                    <img v-show="audio" src="./../assets/icons/audio.png" alt="audio icon">
+                    <img v-show="!audio" src="./../assets/icons/no-audio.png" alt="no audio icon">
+                </button>
             </div>  
         </div>
     </div>
@@ -213,7 +222,8 @@ export default {
         color: white;
     }
 
-    .rewind-forward {
+    .rewind-forward,
+    .audio {
         scale: .7;
     }
 </style>
