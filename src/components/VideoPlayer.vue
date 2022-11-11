@@ -226,4 +226,8 @@ export default {
     .audio {
         scale: .7;
     }
+
+    .audio {
+        margin-left: .5rem;
+    }
 </style>
