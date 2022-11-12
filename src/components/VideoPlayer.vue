@@ -12,7 +12,8 @@ export default {
             forwardTime: 10,
             audio: true,
             volume: 1,
-            barWidth: null
+            barWidth: null,
+            mouseDown: false
         }
     },
     mounted() {
@@ -150,6 +151,20 @@ export default {
             // console.log(percent * this.duration);
             // ^ Was used a lot for testing purposes so I'm leaving it here
             this.$refs.video.currentTime = percent * this.duration;
+        },
+        mouseMoveUpdate(event) {
+            if(!this.mouseDown) return;
+            else if(this.barWidth === null) {
+                this.barWidth = event.target.offsetWidth;
+            }
+
+            if(this.restartShow) {
+                this.playPauseEvent();
+            }
+
+            const percent = event.offsetX / this.barWidth;  
+            this.$refs.video.currentTime = percent * this.duration;
+            this.currentTime = percent * this.duration;
         }
     }
 }
@@ -164,7 +179,11 @@ export default {
             @ended="endedEvent"
         ></video>
         <div class="controls">
-            <div @click="progressBarUpdate" class="progress-bar">
+            <div @click="progressBarUpdate" 
+                 @mousedown="() => mouseDown = true" 
+                 @mouseup="() => mouseDown = false"
+                 @mousemove="mouseMoveUpdate"
+                 class="progress-bar">
                 <div class="current-bar" :style="{ width: progress }">
                 </div>
             </div>
@@ -194,7 +213,6 @@ export default {
 <style scoped>
     .video-container {
         width: 100%;
-        max-width: 900px;
         position: relative;
         overflow-y: hidden;
     }
