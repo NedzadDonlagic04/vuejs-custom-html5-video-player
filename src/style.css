@@ -23,3 +23,8 @@ body {
     align-items: center;
     background-color: var(--bg-color);
 }
+
+#app {
+    width: 100%;
+    max-width: 900px;
+}
