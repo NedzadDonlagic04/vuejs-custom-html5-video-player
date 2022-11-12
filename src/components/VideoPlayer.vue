@@ -10,7 +10,8 @@ export default {
             duration: null,
             rewindTime: -10,
             forwardTime: 10,
-            audio: true
+            audio: true,
+            volume: 1
         }
     },
     mounted() {
@@ -118,6 +119,22 @@ export default {
         audioOnOff() {
             this.$refs.video.muted = this.audio;
             this.audio = !this.audio;
+
+            if(this.audio) {
+                this.$refs.volumeBar.value = this.volume * 100;
+            } else {
+                this.$refs.volumeBar.value = 0;
+            }
+        },
+        volumeChange(event) {
+            this.volume = Number(event.target.value) / 100;
+            this.$refs.video.volume = this.volume;
+
+            if(this.volume === 0) {
+                this.audio = false;
+            } else {
+                this.audio = true;
+            }
         }
     }
 }
@@ -153,6 +170,7 @@ export default {
                     <img v-show="audio" src="./../assets/icons/audio.png" alt="audio icon">
                     <img v-show="!audio" src="./../assets/icons/no-audio.png" alt="no audio icon">
                 </button>
+                <input ref="volumeBar" @input="volumeChange" type="range" min="0" max="100" step="1" value="100">
             </div>  
         </div>
     </div>
@@ -228,6 +246,11 @@ export default {
     }
 
     .audio {
+        margin-left: .5rem;
+    }
+
+    .audio + input[type="range"] {
+        accent-color: white;
         margin-left: .5rem;
     }
 </style>
