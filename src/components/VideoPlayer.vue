@@ -11,7 +11,8 @@ export default {
             rewindTime: -10,
             forwardTime: 10,
             audio: true,
-            volume: 1
+            volume: 1,
+            barWidth: null
         }
     },
     mounted() {
@@ -135,6 +136,20 @@ export default {
             } else {
                 this.audio = true;
             }
+        },
+        progressBarUpdate(event) {
+            if(this.barWidth === null) {
+                this.barWidth = event.target.offsetWidth;
+            }
+
+            if(this.restartShow) {
+                this.playPauseEvent();
+            }
+
+            const percent = event.offsetX / this.barWidth;  
+            // console.log(percent * this.duration);
+            // ^ Was used a lot for testing purposes so I'm leaving it here
+            this.$refs.video.currentTime = percent * this.duration;
         }
     }
 }
@@ -149,7 +164,7 @@ export default {
             @ended="endedEvent"
         ></video>
         <div class="controls">
-            <div class="progress-bar">
+            <div @click="progressBarUpdate" class="progress-bar">
                 <div class="current-bar" :style="{ width: progress }">
                 </div>
             </div>
